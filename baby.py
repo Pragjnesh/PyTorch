@@ -1,7 +1,12 @@
-import caltech256 as caltech256
 import torch, copy
+import torch.nn as nn
+import torch.optim as optim
+
 from torchvision import models,transforms
-from torch.utils.data import DataLoaders
+from torch.utils.data import DataLoader
+from torch.optim import lr_scheduler
+from caltech256 import Caltech256
+
 
 transform = transforms.Compose(
     [
@@ -22,10 +27,10 @@ use_gpu = torch.cuda.is_available()
 def train_model(model, criterion, optimizer, scheduler, num_epochs=5):
     model.train(True)
     for epoch in range(num_epochs):
-        print epoch
+        print(epoch)
         for data in train_data:
             scheduler.step()
-            inputs,labels = train_data
+            inputs, labels = data
             outputs = model(inputs)
             loss = criterion(outputs,labels.view(-1).long())
             loss.backward()
@@ -40,4 +45,4 @@ model_conv = model_conv.cuda()
 criterion = nn.CrossEntropyLoss()
 optimizer_conv = optim.SGD(model_conv.fc.parameters(), lr=0.001, momentum=0.9)
 exp_lr_scheduler = lr_scheduler.StepLR(optimizer_conv, step_size=7, gamma=0.1)
-model_conv = train_model(model_conv, criterion, optimizer_conv,exp_lr_scheduler, num_epochs=25)
+model_conv = train_model(model_conv, criterion, optimizer_conv,exp_lr_scheduler, num_epochs=2)
