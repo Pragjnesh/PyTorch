@@ -60,7 +60,11 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
                 labels = Variable(labels.cuda())
             else:
                 inputs, labels = Variable(inputs), Variable(labels)
-    #
+            optimizer.zero_grad()
+            outputs = model(inputs)
+            _, preds = torch.max(outputs.data, 1)
+            loss = criterion(outputs,labels.view(-1).long())
+
     #     # Each epoch has a training and validation phase
     #     for phase in ['train', 'test']:
     #         if phase == 'train':
